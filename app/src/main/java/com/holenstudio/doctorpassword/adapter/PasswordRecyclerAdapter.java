@@ -2,6 +2,7 @@ package com.holenstudio.doctorpassword.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import java.util.List;
  * Created by Holen on 2016/5/23.
  */
 public class PasswordRecyclerAdapter extends RecyclerView.Adapter implements MyItemTouchCallback.ItemTouchAdapter{
+    private static final String TAG = "PasswordRecyclerAdapter";
     private Context mContext;
     private List<PasswordInfo> mPswList;
 
@@ -79,6 +81,8 @@ public class PasswordRecyclerAdapter extends RecyclerView.Adapter implements MyI
             mTitleView = (TextView) view.findViewById(R.id.title);
             mUsernameView = (TextView) view.findViewById(R.id.username);
             mSiteView = (TextView) view.findViewById(R.id.site);
+
+
         }
 
         public void setTitleText(String title) {

@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < 10; i++) {
             pswList.add(new PasswordInfo("site:" + i, "title:" + i, "username:" + i, "password:" + i, "note:" + i));
         }
-        Log.d(TAG, pswList.toString());
         mPswAdapter = new PasswordRecyclerAdapter(pswList);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         pswRecyclerView.setLayoutManager(mLayoutManager);
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onItemClick(RecyclerView.ViewHolder vh) {
-                Snackbar.make(pswRecyclerView, "click " + vh.getLayoutPosition(), Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(pswRecyclerView, "click:" + pswList.get(vh.getLayoutPosition()), Snackbar.LENGTH_SHORT).show();
             }
         });
         textView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.textView);
