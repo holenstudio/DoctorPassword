@@ -26,6 +26,7 @@ import com.holenstudio.doctorpassword.adapter.PasswordRecyclerAdapter;
 import com.holenstudio.doctorpassword.helper.MyItemTouchCallback;
 import com.holenstudio.doctorpassword.helper.OnRecyclerItemClickListener;
 import com.holenstudio.doctorpassword.model.PasswordInfo;
+import com.holenstudio.doctorpassword.util.DocUtil;
 import com.holenstudio.doctorpassword.util.VibratorUtil;
 import com.lapism.searchview.SearchAdapter;
 import com.lapism.searchview.SearchItem;
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < 10; i++) {
             pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + i, "note:" + i));
         }
+        DocUtil.writePswInfoListToDoc(pswList);
         mPswAdapter = new PasswordRecyclerAdapter(pswList);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mPswRecyclerView.setLayoutManager(mLayoutManager);
