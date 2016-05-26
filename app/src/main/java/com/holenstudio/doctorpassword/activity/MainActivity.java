@@ -27,6 +27,7 @@ import com.holenstudio.doctorpassword.helper.MyItemTouchCallback;
 import com.holenstudio.doctorpassword.helper.OnRecyclerItemClickListener;
 import com.holenstudio.doctorpassword.model.PasswordInfo;
 import com.holenstudio.doctorpassword.util.DocUtil;
+import com.holenstudio.doctorpassword.util.PasswordUtil;
 import com.holenstudio.doctorpassword.util.VibratorUtil;
 import com.lapism.searchview.SearchAdapter;
 import com.lapism.searchview.SearchItem;
@@ -93,9 +94,10 @@ public class MainActivity extends AppCompatActivity
 
         pswList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + i, "note:" + i));
+            pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + PasswordUtil.getEncryptString(String.valueOf(i)), "note:" + i));
         }
-        DocUtil.writePswInfoListToDoc(pswList);
+//        DocUtil.writePswInfoListToDoc(pswList);
+//        DocUtil.getPswInfoListFromDoc();
         mPswAdapter = new PasswordRecyclerAdapter(pswList);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mPswRecyclerView.setLayoutManager(mLayoutManager);
@@ -131,6 +133,7 @@ public class MainActivity extends AppCompatActivity
 
         initSearchView();
     }
+
     private void initSearchView() {
         mSearchView.setVersion(SearchView.VERSION_MENU_ITEM);
         mSearchView.setVersionMargins(SearchView.VERSION_MARGINS_MENU_ITEM);
