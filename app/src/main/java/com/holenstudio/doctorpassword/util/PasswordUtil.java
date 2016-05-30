@@ -8,9 +8,9 @@ public class PasswordUtil {
         System.loadLibrary("passwordEncryption");   //defaultConfig.ndk.moduleName
     }
 
-    public static String getEncryptString(String targetStr) {
-        return nativeEncryptString(targetStr);
+    public static String getEncryptString(String srcStr) {
+        return nativeEncryptString(srcStr);
     }
 
-    private static native String nativeEncryptString(String targetStr);
+    private static native String nativeEncryptString(String srcStr);
 }

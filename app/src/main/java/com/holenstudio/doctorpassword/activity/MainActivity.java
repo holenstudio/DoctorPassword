@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity
 
         pswList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + PasswordUtil.getEncryptString(String.valueOf(i)), "note:" + i));
+            pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + PasswordUtil.getEncryptString(String.valueOf("abc" + i)), "note:" + i));
         }
 //        DocUtil.writePswInfoListToDoc(pswList);
 //        DocUtil.getPswInfoListFromDoc();
