@@ -2,10 +2,14 @@ package com.holenstudio.doctorpassword.model;
 
 import java.io.Serializable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.Required;
+
 /**
  * Created by Holen on 2016/5/23.
  */
-public class PasswordInfo implements Serializable{
+public class PasswordInfo extends RealmObject implements Serializable{
+    @Required
     private String mId;
     private String mSite;
     private String mTitle;

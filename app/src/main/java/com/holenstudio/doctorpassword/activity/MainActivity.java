@@ -37,6 +37,10 @@ import com.lapism.searchview.SearchView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -54,8 +58,9 @@ public class MainActivity extends AppCompatActivity
     private Intent mToPswDetailIntent;
     List<PasswordInfo> pswList;
     private PasswordRecyclerAdapter mPswAdapter;
-
     private String mPasswordKey;
+    private Realm realm;
+    private RealmResults<PasswordInfo> mResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +69,7 @@ public class MainActivity extends AppCompatActivity
 
 //        mPasswordKey = ((App)getApplication()).getInfo().getKey();
         mPasswordKey = "abcdef";
+        realm = Realm.getDefaultInstance();
         initView();
         initData();
     }
@@ -97,6 +103,13 @@ public class MainActivity extends AppCompatActivity
         mNavigationView.setNavigationItemSelectedListener(this);
 
         pswList = new ArrayList<>();
+        mResults = realm.where(PasswordInfo.class).findAllAsync();
+        mResults.addChangeListener(new RealmChangeListener<RealmResults<PasswordInfo>>() {
+            @Override
+            public void onChange(RealmResults<PasswordInfo> element) {
+
+            }
+        });
         for (int i = 0; i < 10; i++) {
             pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + PasswordUtil.getEncryptString(String.valueOf("abc" + i), mPasswordKey), "note:" + i));
         }
@@ -290,5 +303,12 @@ public class MainActivity extends AppCompatActivity
             }
             mPswAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        realm.close();
     }
 }
