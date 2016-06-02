@@ -1,55 +1,26 @@
-apply plugin: 'com.android.model.application'
+apply plugin: 'com.android.application'
 
-model {
-    android {
-        compileSdkVersion 23
-        buildToolsVersion "23.0.3"
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
 
-        defaultConfig.with {
-            applicationId "com.holenstudio.doctorpassword"
-            minSdkVersion.apiLevel 21
-            targetSdkVersion.apiLevel 23
-            versionCode 1
-            versionName "1.0"
-
-        }
+    defaultConfig {
+        applicationId "com.holenstudio.doctorpassword"
+        minSdkVersion 21
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
 
         ndk {
             moduleName "passwordEncryption"         //生成的so名字
-//        abiFilters "armeabi", "armeabi-v7a", "x86"  //输出指定三种abi体系结构下的so库。目前可有可无。
+            abiFilters "armeabi", "armeabi-v7a", "x86"  //输出指定三种abi体系结构下的so库。目前可有可无。
         }
+    }
 
-        productFlavors {
-            create("arm") {
-                ndk.abiFilters.add("armeabi")
-            }
-            create("arm7") {
-                ndk.abiFilters.add("armeabi-v7a")
-            }
-            create("arm8") {
-                ndk.abiFilters.add("arm64-v8a")
-            }
-            create("x86") {
-                ndk.abiFilters.add("x86")
-            }
-            create("x86-64") {
-                ndk.abiFilters.add("x86_64")
-            }
-            create("mips") {
-                ndk.abiFilters.add("mips")
-            }
-            create("mips-64") {
-                ndk.abiFilters.add("mips64")
-            }
-            // To include all cpu architectures, leaves abiFilters empty
-            create("all")
-        }
-
-        buildTypes {
-            release {
-                minifyEnabled false
-                proguardFiles.add(file('proguard-rules.txt'))
-            }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }

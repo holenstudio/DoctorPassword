@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.holenstudio.doctorpassword.App;
 import com.holenstudio.doctorpassword.R;
 import com.holenstudio.doctorpassword.adapter.PasswordRecyclerAdapter;
 import com.holenstudio.doctorpassword.helper.MyItemTouchCallback;
@@ -52,14 +53,17 @@ public class MainActivity extends AppCompatActivity
 
     private Intent mToPswDetailIntent;
     List<PasswordInfo> pswList;
-
     private PasswordRecyclerAdapter mPswAdapter;
+
+    private String mPasswordKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        mPasswordKey = ((App)getApplication()).getInfo().getKey();
+        mPasswordKey = "abcdef";
         initView();
         initData();
     }
@@ -94,7 +98,7 @@ public class MainActivity extends AppCompatActivity
 
         pswList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + PasswordUtil.getEncryptString(String.valueOf("abc" + i)), "note:" + i));
+            pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + PasswordUtil.getEncryptString(String.valueOf("abc" + i), mPasswordKey), "note:" + i));
         }
 //        DocUtil.writePswInfoListToDoc(pswList);
 //        DocUtil.getPswInfoListFromDoc();
