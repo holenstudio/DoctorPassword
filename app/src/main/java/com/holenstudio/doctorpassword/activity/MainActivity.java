@@ -21,13 +21,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.holenstudio.doctorpassword.App;
 import com.holenstudio.doctorpassword.R;
 import com.holenstudio.doctorpassword.adapter.PasswordRecyclerAdapter;
 import com.holenstudio.doctorpassword.helper.MyItemTouchCallback;
 import com.holenstudio.doctorpassword.helper.OnRecyclerItemClickListener;
 import com.holenstudio.doctorpassword.model.PasswordInfo;
-import com.holenstudio.doctorpassword.util.DocUtil;
 import com.holenstudio.doctorpassword.util.PasswordUtil;
 import com.holenstudio.doctorpassword.util.VibratorUtil;
 import com.lapism.searchview.SearchAdapter;
@@ -56,8 +54,10 @@ public class MainActivity extends AppCompatActivity
     private TextView textView;
 
     private Intent mToPswDetailIntent;
-    List<PasswordInfo> pswList;
+    private List<PasswordInfo> pswList;
+    private List<SearchItem> mSuggestionsList;
     private PasswordRecyclerAdapter mPswAdapter;
+    private SearchAdapter mSearchAdapter;
     private String mPasswordKey;
     private Realm realm;
     private RealmResults<PasswordInfo> mResults;
@@ -90,8 +90,7 @@ public class MainActivity extends AppCompatActivity
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                startActivityForResult(new Intent(MainActivity.this, PasswordDetailActivity.class), REQUEST_RESULT_UPDATE_OR_CREATE_PSW_INFO);
             }
         });
 
@@ -102,19 +101,45 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
+//        realm.executeTransactionAsync(new Realm.Transaction() {
+//            @Override
+//            public void execute(Realm realm) {
+//                for (int i = 0; i < 10; i++) {
+//                    PasswordInfo info = realm.createObject(PasswordInfo.class);
+//                    info.setId(String.valueOf(i));
+//                    info.setTitle("title is " + i);
+//                    info.setUsername("User." + i);
+//                    info.setPassword("psw" + i);
+//                    info.setNote("This is a site of" + i);
+//                    info.setSite("www." + i + ".com");
+//                    info.setLevel(i & 3);
+////            pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + PasswordUtil.getEncryptString(String.valueOf("abc" + i), mPasswordKey), "note:" + i));
+//                }
+//            }
+//        });
         pswList = new ArrayList<>();
+        mSuggestionsList = new ArrayList<>();
         mResults = realm.where(PasswordInfo.class).findAllAsync();
         mResults.addChangeListener(new RealmChangeListener<RealmResults<PasswordInfo>>() {
             @Override
             public void onChange(RealmResults<PasswordInfo> element) {
-
+                pswList.clear();
+                pswList.addAll(element);
+                for (PasswordInfo info : pswList) {
+                    mSuggestionsList.add(new SearchItem(info.getSite()));
+                }
+                if (mPswAdapter != null) {
+                    mPswAdapter.notifyDataSetChanged();
+                }
+                if (mSearchAdapter != null) {
+                    mSearchAdapter.notifyDataSetChanged();
+                }
             }
         });
-        for (int i = 0; i < 10; i++) {
-            pswList.add(new PasswordInfo("" + i, "site:" + i, "title:" + i, "username:" + i, "password:" + PasswordUtil.getEncryptString(String.valueOf("abc" + i), mPasswordKey), "note:" + i));
-        }
 //        DocUtil.writePswInfoListToDoc(pswList);
 //        DocUtil.getPswInfoListFromDoc();
+        mSearchAdapter = new SearchAdapter(this, mSuggestionsList);
+        mSearchView.setAdapter(mSearchAdapter);
         mPswAdapter = new PasswordRecyclerAdapter(pswList);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mPswRecyclerView.setLayoutManager(mLayoutManager);
@@ -135,7 +160,13 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onItemClick(RecyclerView.ViewHolder vh) {
-                mToPswDetailIntent.putExtra("password_info", pswList.get(vh.getLayoutPosition()));
+                mToPswDetailIntent.putExtra("id", pswList.get(vh.getLayoutPosition()).getId());
+                mToPswDetailIntent.putExtra("title", pswList.get(vh.getLayoutPosition()).getTitle());
+                mToPswDetailIntent.putExtra("username", pswList.get(vh.getLayoutPosition()).getUsername());
+                mToPswDetailIntent.putExtra("password", pswList.get(vh.getLayoutPosition()).getPassword());
+                mToPswDetailIntent.putExtra("site", pswList.get(vh.getLayoutPosition()).getSite());
+                mToPswDetailIntent.putExtra("note", pswList.get(vh.getLayoutPosition()).getNote());
+                mToPswDetailIntent.putExtra("level", pswList.get(vh.getLayoutPosition()).getLevel());
                 startActivityForResult(mToPswDetailIntent, REQUEST_RESULT_UPDATE_OR_CREATE_PSW_INFO);
             }
         });
@@ -157,7 +188,7 @@ public class MainActivity extends AppCompatActivity
         mSearchView.setTheme(SearchView.THEME_LIGHT, true);
         mSearchView.setTextSize(16);
         mSearchView.setHint(R.string.search_hint);
-        mSearchView.setDivider(true);
+        mSearchView.setDivider(false);
         mSearchView.setVoice(false);
         mSearchView.setVoiceText("Set permission on Android 6+ !");
         mSearchView.setAnimationDuration(SearchView.ANIMATION_DURATION);
@@ -189,18 +220,14 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        List<SearchItem> suggestionsList = new ArrayList<>();
-        for (PasswordInfo info : pswList) {
-            suggestionsList.add(new SearchItem(info.getSite()));
-        }
-        SearchAdapter searchAdapter = new SearchAdapter(this, suggestionsList);
-        mSearchView.setAdapter(searchAdapter);
     }
 
     @Override
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else if (mSearchView != null && mSearchView.isSearchOpen()) {
+            mSearchView.close(true);
         } else {
             super.onBackPressed();
         }
@@ -210,8 +237,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        mSearchView.close(true);
-        mSearchView.open(false);
+//        mSearchView.close(true);
+//        mSearchView.open(false);
         return true;
     }
 
@@ -286,21 +313,37 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        final Intent dataIntent = data;
         if (resultCode == RESULT_OK && requestCode == REQUEST_RESULT_UPDATE_OR_CREATE_PSW_INFO) {
-            PasswordInfo info = (PasswordInfo) data.getSerializableExtra("password_info");
-            if (info != null) {
-                int size = pswList.size();
-                int i = 0;
-                for (; i < size; i++) {
-                    PasswordInfo temp = pswList.get(i);
-                    if (info.getId().equals(temp.getId())) {
-                        pswList.set(i, info);
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    PasswordInfo info = realm.where(PasswordInfo.class).equalTo("mId", dataIntent.getStringExtra("id")).findFirst();
+                    if (null == info) {
+                        info = realm.createObject(PasswordInfo.class);
+                        info.setId(dataIntent.getStringExtra("id"));
                     }
+                    info.setTitle(dataIntent.getStringExtra("title"));
+                    info.setUsername(dataIntent.getStringExtra("username"));
+                    info.setPassword(dataIntent.getStringExtra("password"));
+                    info.setSite(dataIntent.getStringExtra("site"));
+                    info.setNote(dataIntent.getStringExtra("note"));
+                    info.setLevel(dataIntent.getIntExtra("level", 0));
                 }
-                if (i == size) {
-                    pswList.add(info);
-                }
-            }
+            });
+
+//            realm.copyToRealmOrUpdate(info);
+//            int size = pswList.size();
+//            int i = 0;
+//            for (; i < size; i++) {
+//                PasswordInfo temp = pswList.get(i);
+//                if (info.getId().equals(temp.getId())) {
+//                    pswList.set(i, info);
+//                }
+//            }
+//            if (i == size) {
+//                pswList.add(info);
+//            }
             mPswAdapter.notifyDataSetChanged();
         }
     }
@@ -311,4 +354,5 @@ public class MainActivity extends AppCompatActivity
 
         realm.close();
     }
+
 }

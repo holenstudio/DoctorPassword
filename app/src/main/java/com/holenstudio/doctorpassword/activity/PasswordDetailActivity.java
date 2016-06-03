@@ -59,17 +59,23 @@ public class PasswordDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
-        mPswInfo = (PasswordInfo) getIntent().getSerializableExtra("password_info");
-        if (mPswInfo == null) {
+        String id = getIntent().getStringExtra("id");
+        if (id == null) {
             mToolbar.setTitle("创建密码");
-            mPswInfo = new PasswordInfo();
             mTitleView.setVisibility(View.VISIBLE);
             isNewPswInfo = true;
-        } else {
-            isNewPswInfo = false;
-            mTitleView.setVisibility(View.GONE);
-            mToolbar.setTitle(mPswInfo.getTitle());
+            return;
         }
+        isNewPswInfo = false;
+        mPswInfo = new PasswordInfo(id);
+        mPswInfo.setTitle(getIntent().getStringExtra("title"));
+        mPswInfo.setUsername(getIntent().getStringExtra("username"));
+        mPswInfo.setPassword(getIntent().getStringExtra("password"));
+        mPswInfo.setSite(getIntent().getStringExtra("site"));
+        mPswInfo.setNote(getIntent().getStringExtra("note"));
+        mPswInfo.setLevel(getIntent().getIntExtra("level", 0));
+        mTitleView.setVisibility(View.GONE);
+        mToolbar.setTitle(mPswInfo.getTitle());
         mTitleView.setText(mPswInfo.getTitle());
         mUsernameView.setText(mPswInfo.getUsername());
         mPasswordView.setText(mPswInfo.getPassword());
@@ -122,8 +128,8 @@ public class PasswordDetailActivity extends AppCompatActivity {
     }
 
     private void updatePswInfo() {
-        if (mPswInfo.getId() == null || mPswInfo.getId().isEmpty()) {
-            mPswInfo.setId(String.valueOf(System.currentTimeMillis()));
+        if (mPswInfo == null) {
+            mPswInfo = new PasswordInfo(String.valueOf(System.currentTimeMillis()));
         }
         mPswInfo.setTitle(mTitleView.getText().toString());
         mPswInfo.setPassword(mPasswordView.getText().toString());
@@ -137,7 +143,13 @@ public class PasswordDetailActivity extends AppCompatActivity {
 
     private void submit() {
         Intent intent=new Intent();
-        intent.putExtra("password_info", mPswInfo);
+        intent.putExtra("id", mPswInfo.getId());
+        intent.putExtra("title", mPswInfo.getTitle());
+        intent.putExtra("username", mPswInfo.getUsername());
+        intent.putExtra("password", mPswInfo.getPassword());
+        intent.putExtra("site", mPswInfo.getSite());
+        intent.putExtra("note", mPswInfo.getNote());
+        intent.putExtra("level", mPswInfo.getLevel());
         setResult(RESULT_OK, intent);
         finish();
     }
