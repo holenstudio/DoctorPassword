@@ -124,7 +124,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onChange(RealmResults<PasswordInfo> element) {
                 pswList.clear();
-                pswList.addAll(element);
+                for (PasswordInfo info:element) {
+                    PasswordInfo temp = new PasswordInfo();
+                    temp.setLevel(info.getLevel());
+                    temp.setId(info.getId());
+                    temp.setNote(info.getNote());
+                    temp.setTitle(info.getTitle());
+                    temp.setUsername(info.getUsername());
+                    temp.setSite(info.getSite());
+                    temp.setPassword(PasswordUtil.getEncryptString(info.getPassword(), mPasswordKey));
+                    pswList.add(temp);
+                }
                 for (PasswordInfo info : pswList) {
                     mSuggestionsList.add(new SearchItem(info.getSite()));
                 }
