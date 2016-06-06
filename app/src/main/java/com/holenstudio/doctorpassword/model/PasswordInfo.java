@@ -3,7 +3,6 @@ package com.holenstudio.doctorpassword.model;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 /**
@@ -19,6 +18,7 @@ public class PasswordInfo extends RealmObject implements Serializable{
     private String mPassword;
     private String mNote;
     private int mLevel;
+    private int mIsDeleted;
 
     public PasswordInfo() {
         this("");
@@ -37,6 +37,10 @@ public class PasswordInfo extends RealmObject implements Serializable{
     }
 
     public PasswordInfo(String id, String site, String title, String username, String password, String note, int level) {
+        this(id, site, title, username, password, note, level, 0);
+    }
+
+    public PasswordInfo(String id, String site, String title, String username, String password, String note, int level, int isDeleted) {
         this.mId = id;
         this.mSite = site;
         this.mTitle = title;
@@ -44,6 +48,7 @@ public class PasswordInfo extends RealmObject implements Serializable{
         this.mPassword = password;
         this.mNote = note;
         this.mLevel = level;
+        this.mIsDeleted = isDeleted;
     }
 
     public String getId() {
@@ -102,6 +107,14 @@ public class PasswordInfo extends RealmObject implements Serializable{
         this.mLevel = level;
     }
 
+    public void setDeletable(int isDeleted) {
+        this.mIsDeleted = isDeleted;
+    }
+
+    public int getDeletable() {
+        return this.mIsDeleted;
+    }
+
     @Override
     public String toString() {
         return "PasswordInfo{" +
@@ -112,6 +125,7 @@ public class PasswordInfo extends RealmObject implements Serializable{
                 ", mPassword='" + mPassword + '\'' +
                 ", mNote='" + mNote + '\'' +
                 ", mLevel=" + mLevel +
+                ", mIsDeleted=" + mIsDeleted +
                 '}';
     }
 }

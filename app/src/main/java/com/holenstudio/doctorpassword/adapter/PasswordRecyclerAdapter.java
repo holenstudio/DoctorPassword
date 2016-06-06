@@ -1,6 +1,8 @@
 package com.holenstudio.doctorpassword.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,9 +39,14 @@ public class PasswordRecyclerAdapter extends RecyclerView.Adapter implements MyI
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         PasswordInfo pswInfo = mPswList.get(position);
-        ((PasswordViewHoler) holder).setTitleText(pswInfo.getTitle());
-        ((PasswordViewHoler) holder).setUsernameText(pswInfo.getUsername());
-        ((PasswordViewHoler) holder).setSiteText(pswInfo.getSite());
+        if (pswInfo.getDeletable() > 0) {
+            ((PasswordViewHoler) holder).setVisibility(false);
+        } else {
+            ((PasswordViewHoler) holder).setVisibility(true);
+            ((PasswordViewHoler) holder).setTitleText(pswInfo.getTitle());
+            ((PasswordViewHoler) holder).setUsernameText(pswInfo.getUsername());
+            ((PasswordViewHoler) holder).setSiteText(pswInfo.getSite());
+        }
     }
 
     @Override
@@ -74,6 +81,8 @@ public class PasswordRecyclerAdapter extends RecyclerView.Adapter implements MyI
         private TextView mTitleView;
         private TextView mUsernameView;
         private TextView mSiteView;
+        private CardView mCardView;
+        private boolean mIsSelected;
 
         public PasswordViewHoler(View view) {
             super(view);
@@ -81,8 +90,7 @@ public class PasswordRecyclerAdapter extends RecyclerView.Adapter implements MyI
             mTitleView = (TextView) view.findViewById(R.id.title);
             mUsernameView = (TextView) view.findViewById(R.id.username);
             mSiteView = (TextView) view.findViewById(R.id.site);
-
-
+            mCardView = (CardView) view.findViewById(R.id.card_view);
         }
 
         public void setTitleText(String title) {
@@ -97,7 +105,27 @@ public class PasswordRecyclerAdapter extends RecyclerView.Adapter implements MyI
             mSiteView.setText(site);
         }
 
+        public void setSelectable(boolean selected) {
+            if (selected) {
+                mCardView.setCardBackgroundColor(Color.LTGRAY);
+                mIsSelected = true;
+            } else {
+                mCardView.setCardBackgroundColor(Color.WHITE);
+                mIsSelected = false;
+            }
+        }
 
+        public boolean getSelectable() {
+            return mIsSelected;
+        }
+
+        public void setVisibility(boolean visibale) {
+            if (visibale) {
+                mCardView.setVisibility(View.VISIBLE);
+            } else {
+                mCardView.setVisibility(View.GONE);
+            }
+        }
     }
 
 }

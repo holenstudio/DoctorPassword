@@ -1,6 +1,5 @@
 package com.holenstudio.doctorpassword.activity;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,10 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.holenstudio.doctorpassword.R;
 import com.holenstudio.doctorpassword.model.PasswordInfo;
@@ -136,7 +132,7 @@ public class PasswordDetailActivity extends AppCompatActivity {
         mPswInfo.setUsername(mUsernameView.getText().toString());
         mPswInfo.setNote(mNoteView.getText().toString());
         mPswInfo.setSite(mSiteView.getText().toString());
-        if (mLevelView.getText() != null) {
+        if (mLevelView.getText() != null && !mLevelView.getText().toString().isEmpty()) {
             mPswInfo.setLevel(Integer.parseInt(mLevelView.getText().toString()));
         }
     }
