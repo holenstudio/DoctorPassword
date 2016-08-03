@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity
         mPswRecyclerView.setNestedScrollingEnabled(true);
         mPswRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mPswRecyclerView.setAdapter(mPswAdapter);
+        mPswRecyclerView.setItemAnimator(new DefaultItemAnimator());
         final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new MyItemTouchCallback(mPswAdapter));
         itemTouchHelper.attachToRecyclerView(mPswRecyclerView);
         final int size = pswList.size();
@@ -357,9 +358,9 @@ public class MainActivity extends AppCompatActivity
                     if (pswList.get(i - 1).getDeletable() > 0) {
                         mResults.deleteFromRealm(i - 1);
                         pswList.remove(i - 1);
+                        mPswAdapter.notifyItemRemoved(i - 1);
                     }
                 }
-                mPswAdapter.notifyDataSetChanged();
 //                for (int i = 0; i < index; i++) {
 //                    PasswordRecyclerAdapter.PasswordViewHoler holder = (PasswordRecyclerAdapter.PasswordViewHoler) mPswRecyclerView.getChildViewHolder(mPswRecyclerView.getChildAt(i));
 //                    if (holder.getSelectable()) {
